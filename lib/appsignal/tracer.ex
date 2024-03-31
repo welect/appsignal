@@ -1,9 +1,9 @@
 defmodule Appsignal.Tracer do
+  require Appsignal.Utils
   alias Appsignal.Span
 
-  require Appsignal.Utils
-
   @monitor Appsignal.Utils.compile_env(:appsignal, :appsignal_monitor, Appsignal.Monitor)
+  @span Appsignal.Utils.compile_env(:appsignal, :appsignal_span, Appsignal.Span)
 
   @table :"$appsignal_registry"
 
@@ -52,7 +52,7 @@ defmodule Appsignal.Tracer do
 
     unless ignored?(pid) do
       namespace
-      |> Span.create_root(pid, options[:start_time])
+      |> @span.create_root(pid, options[:start_time])
       |> register()
       |> on_create_span()
     end
@@ -63,7 +63,7 @@ defmodule Appsignal.Tracer do
 
     unless ignored?(pid) do
       parent
-      |> Span.create_child(pid, options[:start_time])
+      |> @span.create_child(pid, options[:start_time])
       |> register()
       |> on_create_span()
     end
@@ -148,7 +148,7 @@ defmodule Appsignal.Tracer do
   """
   def close_span(%Span{} = span) do
     span
-    |> Span.close()
+    |> @span.close()
     |> deregister()
 
     :ok
@@ -170,7 +170,7 @@ defmodule Appsignal.Tracer do
 
   def close_span(%Span{} = span, end_time: end_time) do
     span
-    |> Span.close(end_time)
+    |> @span.close(end_time)
     |> deregister()
 
     :ok
