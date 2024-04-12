@@ -86,10 +86,12 @@ defmodule Appsignal.Mixfile do
 
   defp test_paths(_), do: ["test/appsignal", "test/mix"]
 
+  @add_elixirc_paths Application.compile_env(:appsignal, :add_elixirc_paths, [])
+
   defp elixirc_paths(env) do
     case test?(env) do
-      true -> ["lib", "test/support"]
-      false -> ["lib"]
+      true -> @add_elixirc_paths ++ ["lib", "test/support"]
+      false -> @add_elixirc_paths ++ ["lib"]
     end
   end
 
